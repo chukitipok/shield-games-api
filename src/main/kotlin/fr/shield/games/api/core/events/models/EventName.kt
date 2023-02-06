@@ -9,11 +9,11 @@ enum class EventName(val label: String) {
     GAME_START("game start"),
     PLAYER_CONNECTED("player connected"),
     PLAYER_INFO("player info"),
-    PLAYER_JOINED_GAME("player joined room"),
+    PLAYER_JOINS_GAME("player joins game"),
     ROW_SELECTED("row selected")
     ;
 
     companion object {
-        fun from(label: String): fr.shield.games.api.core.events.models.EventName = fr.shield.games.api.core.events.models.EventName.values().find { it.label == label } ?: throw IllegalArgumentException("Event name does not exists")
+        fun from(label: String): EventName = EventName.values().find { it.label == label } ?: throw IllegalArgumentException("Event name does not exists")
     }
 }

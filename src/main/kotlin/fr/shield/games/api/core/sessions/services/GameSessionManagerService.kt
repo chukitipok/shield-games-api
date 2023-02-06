@@ -1,5 +1,6 @@
 package fr.shield.games.api.core.sessions.services
 
+import fr.shield.games.api.common.exceptions.ResourceNotFoundException
 import fr.shield.games.api.core.games.models.Game
 import fr.shield.games.api.core.sessions.models.PlayerSession
 import fr.shield.games.api.core.sessions.ports.GameSessionManager
@@ -17,7 +18,7 @@ class GameSessionManagerService(private val playerSessionManager: PlayerSessionM
     override fun unregisterGame(gameId: String): Boolean = games.remove(gameId) != null
 
     override fun addPlayerToGame(player: PlayerSession, gameId: String): List<PlayerSession> {
-        val players = games[gameId] ?: throw fr.shield.games.api.common.exceptions.ResourceNotFoundException()
+        val players = games[gameId] ?: throw ResourceNotFoundException()
 
         return if (!players.contains(player)) {
             players.add(player)
@@ -27,7 +28,7 @@ class GameSessionManagerService(private val playerSessionManager: PlayerSessionM
     }
 
     override fun removePlayerFromGame(playerId: String, gameId: String): List<PlayerSession> {
-        val players = games[gameId] ?: throw fr.shield.games.api.common.exceptions.ResourceNotFoundException()
+        val players = games[gameId] ?: throw ResourceNotFoundException()
         players.removeIf { playerId == it.player()?.id() }
 
         return players.toList()

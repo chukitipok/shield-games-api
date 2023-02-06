@@ -3,6 +3,9 @@ package fr.shield.games.api.core.events.services.consumers
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import fr.shield.games.api.common.exceptions.ResourceNotFoundException
+import fr.shield.games.api.core.events.models.EmissionEvent
+import fr.shield.games.api.core.events.models.Event
 import fr.shield.games.api.core.events.models.EventName.ERROR
 import fr.shield.games.api.core.events.models.EventName.GAME_CREATED
 import fr.shield.games.api.core.events.ports.EventConsumer
@@ -22,21 +25,21 @@ class CreateGameEventConsumer(
 
     private fun mapThisMotherFucker(data: Any): NewGame = mapper.convertValue(data)
 
-    override fun consume(data: Any, from: PlayerSession): fr.shield.games.api.core.events.models.Event {
+    override fun consume(data: Any, from: PlayerSession): Event {
         val newGame = mapThisMotherFucker(data)
 
         val connectedPlayers = playerSessionManager.retrieveAllConnected()
-        val gameOwnerSession = connectedPlayers.find { it == from } ?: throw fr.shield.games.api.common.exceptions.ResourceNotFoundException()
-        val player = gameOwnerSession.player() ?: throw fr.shield.games.api.common.exceptions.ResourceNotFoundException()
+        val gameOwnerSession = connectedPlayers.find { it == from }
+        val player = gameOwnerSession?.player() ?: throw ResourceNotFoundException()
         val game = gameService.create(newGame.name, newGame.maxPlayers, player.id())
 
         return if (game != null && gameManager.registerGame(game)) {
-            fr.shield.games.api.core.events.models.EmissionEvent(GAME_CREATED, game, connectedPlayers)
+            EmissionEvent(GAME_CREATED, game, connectedPlayers)
         }
         else {
-            fr.shield.games.api.core.events.models.EmissionEvent(
+            EmissionEvent(
                 ERROR,
-                "Could not register player",
+                "Could not register game",
                 listOf(gameOwnerSession)
             )
         }
