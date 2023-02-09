@@ -1,8 +1,5 @@
 package fr.shield.games.api.core.events.services.consumers
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.shield.games.api.common.exceptions.ResourceNotFoundException
 import fr.shield.games.api.core.events.models.EmissionEvent
 import fr.shield.games.api.core.events.models.Event
@@ -14,19 +11,17 @@ import fr.shield.games.api.core.sessions.models.PlayerSession
 import fr.shield.games.api.core.sessions.ports.GameSessionManager
 import fr.shield.games.api.core.sessions.ports.PlayerSessionManager
 import fr.shield.games.api.core.events.models.payloads.NewGame
+import fr.shield.games.api.core.events.ports.PayloadMapper
 
 class CreateGameEventConsumer(
     private val gameService: Games,
     private val playerSessionManager: PlayerSessionManager,
-    private val gameManager: GameSessionManager
+    private val gameManager: GameSessionManager,
+    private val mapper: PayloadMapper
 ) : EventConsumer {
 
-    private val mapper: ObjectMapper = jacksonObjectMapper()
-
-    private fun mapThisMotherFucker(data: Any): NewGame = mapper.convertValue(data)
-
     override fun consume(data: Any, from: PlayerSession): Event {
-        val newGame = mapThisMotherFucker(data)
+        val newGame = mapper.convert(data, NewGame::class.java)
 
         val connectedPlayers = playerSessionManager.retrieveAllConnected()
         val gameOwnerSession = connectedPlayers.find { it == from }

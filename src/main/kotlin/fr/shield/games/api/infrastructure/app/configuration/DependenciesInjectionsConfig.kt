@@ -2,6 +2,7 @@ package fr.shield.games.api.infrastructure.app.configuration
 
 import fr.shield.games.api.core.events.ports.EventConsumerGenerator
 import fr.shield.games.api.core.events.ports.EventEmitter
+import fr.shield.games.api.core.events.ports.PayloadMapper
 import fr.shield.games.api.core.events.services.EventConsumerGeneratorService
 import fr.shield.games.api.core.events.services.EventEmitterService
 import fr.shield.games.api.core.games.ports.GameWriter
@@ -15,6 +16,7 @@ import fr.shield.games.api.core.sessions.ports.PlayerSessionManager
 import fr.shield.games.api.core.sessions.services.GameSessionManagerService
 import fr.shield.games.api.core.sessions.services.PlayerSessionManagerService
 import fr.shield.games.api.infrastructure.adapters.GameJpaRepositoryAdapter
+import fr.shield.games.api.infrastructure.adapters.JacksonPayloadMapperAdapter
 import fr.shield.games.api.infrastructure.adapters.PlayerJpaRepositoryAdapter
 import fr.shield.games.api.infrastructure.repositories.player.PlayerRepository
 import fr.shield.games.api.infrastructure.repositories.game.GameRepository
@@ -29,6 +31,9 @@ class DependenciesInjectionsConfig(
     // REPOSITORIES
     @Bean fun playerReader(): PlayerReader = PlayerJpaRepositoryAdapter(playerRepository)
     @Bean fun gameWriter(): GameWriter = GameJpaRepositoryAdapter(gameRepository)
+
+    // MAPPER
+    @Bean fun payloadMapper(): PayloadMapper = JacksonPayloadMapperAdapter()
 
     // SERVICES
     @Bean fun players(): Players = PlayerService(playerReader())
