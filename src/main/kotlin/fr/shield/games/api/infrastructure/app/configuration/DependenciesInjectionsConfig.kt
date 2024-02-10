@@ -11,9 +11,9 @@ import fr.shield.games.api.core.games.services.GameService
 import fr.shield.games.api.core.players.ports.PlayerReader
 import fr.shield.games.api.core.players.ports.Players
 import fr.shield.games.api.core.players.services.PlayerService
-import fr.shield.games.api.core.sessions.ports.GameSessionManager
+import fr.shield.games.api.core.sessions.ports.RoomManager
 import fr.shield.games.api.core.sessions.ports.PlayerSessionManager
-import fr.shield.games.api.core.sessions.services.GameSessionManagerService
+import fr.shield.games.api.core.sessions.services.RoomManagerService
 import fr.shield.games.api.core.sessions.services.PlayerSessionManagerService
 import fr.shield.games.api.infrastructure.adapters.GameJpaRepositoryAdapter
 import fr.shield.games.api.infrastructure.adapters.JacksonPayloadMapperAdapter
@@ -40,6 +40,6 @@ class DependenciesInjectionsConfig(
     @Bean fun games(): Games = GameService(players(), gameWriter())
     @Bean fun eventEmitter(): EventEmitter = EventEmitterService()
     @Bean fun playerSessionManager(): PlayerSessionManager = PlayerSessionManagerService()
-    @Bean fun gameSessionManager(): GameSessionManager = GameSessionManagerService(playerSessionManager())
-    @Bean fun eventConsumerGenerator(): EventConsumerGenerator = EventConsumerGeneratorService(games(), playerSessionManager(), gameSessionManager())
+    @Bean fun gameSessionManager(): RoomManager = RoomManagerService(playerSessionManager(), games())
+    @Bean fun eventConsumerGenerator(): EventConsumerGenerator = EventConsumerGeneratorService(games(), playerSessionManager(), gameSessionManager(), payloadMapper())
 }

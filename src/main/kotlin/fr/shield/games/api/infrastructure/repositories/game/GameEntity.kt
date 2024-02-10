@@ -1,6 +1,6 @@
 package fr.shield.games.api.infrastructure.repositories.game
 
-import fr.shield.games.api.core.games.models.Game
+import fr.shield.games.api.core.games.models.GameDTO
 import fr.shield.games.api.core.players.models.Player
 import fr.shield.games.api.infrastructure.repositories.player.PlayerEntity
 import jakarta.persistence.*
@@ -12,10 +12,10 @@ data class GameEntity(
     @Id @GeneratedValue val id: UUID?,
     val name: String,
     @Column(name = "participants_limit") val participantsLimit: Int,
-    @OneToMany val players: List<PlayerEntity>,
+    @OneToMany(fetch = FetchType.EAGER) val players: List<PlayerEntity>,
     @ManyToOne val owner: PlayerEntity,
     val active: Boolean
-) : Game {
+) : GameDTO {
 
     override fun id(): String = id.toString()
 

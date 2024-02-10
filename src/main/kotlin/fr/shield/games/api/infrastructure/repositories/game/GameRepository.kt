@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface GameRepository: JpaRepository<GameEntity, UUID>
+interface GameRepository: JpaRepository<GameEntity, UUID> {
+    fun findAllByActiveIsTrue(): List<GameEntity>
+}

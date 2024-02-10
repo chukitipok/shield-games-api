@@ -8,7 +8,7 @@ import fr.shield.games.api.core.events.models.EventName.GAME_CREATED
 import fr.shield.games.api.core.events.ports.EventConsumer
 import fr.shield.games.api.core.games.ports.Games
 import fr.shield.games.api.core.sessions.models.PlayerSession
-import fr.shield.games.api.core.sessions.ports.GameSessionManager
+import fr.shield.games.api.core.sessions.ports.RoomManager
 import fr.shield.games.api.core.sessions.ports.PlayerSessionManager
 import fr.shield.games.api.core.events.models.payloads.NewGame
 import fr.shield.games.api.core.events.ports.PayloadMapper
@@ -16,7 +16,7 @@ import fr.shield.games.api.core.events.ports.PayloadMapper
 class CreateGameEventConsumer(
     private val gameService: Games,
     private val playerSessionManager: PlayerSessionManager,
-    private val gameManager: GameSessionManager,
+    private val gameManager: RoomManager,
     private val mapper: PayloadMapper
 ) : EventConsumer {
 
@@ -28,15 +28,11 @@ class CreateGameEventConsumer(
         val player = gameOwnerSession?.player() ?: throw ResourceNotFoundException()
         val game = gameService.create(newGame.name, newGame.maxPlayers, player.id())
 
-        return if (game != null && gameManager.registerGame(game)) {
+        return if (game != null && gameManager.registerRoom(game)) {
             EmissionEvent(GAME_CREATED, game, connectedPlayers)
         }
         else {
-            EmissionEvent(
-                ERROR,
-                "Could not register game",
-                listOf(gameOwnerSession)
-            )
+            EmissionEvent(ERROR, "Could not register game", listOf(gameOwnerSession))
         }
     }
 }

@@ -7,9 +7,10 @@ class PlayerSessionManagerService : PlayerSessionManager {
     private val connectedPlayers: MutableSet<PlayerSession> = mutableSetOf()
 
     override fun retrieveAllConnected(): List<PlayerSession> = connectedPlayers.toList()
+    override fun retrievePlayerSessionByPlayerId(playerId: String): PlayerSession? = connectedPlayers.find { it.player().id() == playerId }
 
     override fun retrievePlayersSessionByPlayersId(playersId: List<String>): List<PlayerSession> =
-        connectedPlayers.filter { playersId.contains(it.player()?.id()) }.toList()
+        connectedPlayers.filter { playersId.contains(it.player().id()) }.toList()
 
     override fun registerPlayer(playerSession: PlayerSession): Boolean = connectedPlayers.add(playerSession)
 

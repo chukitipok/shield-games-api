@@ -18,7 +18,7 @@ open class AppWebSocketHandler(private val players: Players) : WebSocketHandler 
         if (message !is TextMessage) throw IllegalStateException("Unexpected WebSocket message type: $message")
 
         val event = mapper.readValue<GlobalEvent>(message.payload)
-        val player = players.retrieveById(event.sender) ?: throw fr.shield.games.api.common.exceptions.ResourceNotFoundException()
+        val player = players.retrieveById(event.sender) ?: throw ResourceNotFoundException()
         val playerSession = PlayerWebSocketSession(player, session)
 
         val eventMessage = EventMessage(event, playerSession)
